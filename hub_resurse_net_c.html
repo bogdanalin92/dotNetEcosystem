@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecosistemul .NET - Hub de Învățare Interactiv</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #fdfcfb;
+            color: #2d3436;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .resource-tag {
+            transition: all 0.2s ease;
+        }
+        .resource-tag:hover {
+            transform: translateY(-2px);
+            background-color: #e2e8f0;
+        }
+        .nav-link.active {
+            border-bottom: 2px solid #e67e22;
+            color: #e67e22;
+        }
+        .roadmap-step {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid #edeff2;
+        }
+        .roadmap-step::before {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #e67e22;
+            border: 3px solid #fff;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<!-- Chosen Palette: Sărutul Soarelui (Crem, Nisip, Ardezie Fină, Accent Terracotta/Portocaliu) -->
+<!-- Application Structure Plan: 
+    1. Header & Intro: Contextualizarea ecosistemului .NET.
+    2. Panou de Control (Dashboard): Statistici vizuale despre popularitatea și cererea de skill-uri folosind Chart.js.
+    3. Roadmap Interactiv: Structură pe niveluri (Începător, Intermediar, Avansat) cu toggle-uri pentru detalii.
+    4. Hub de Resurse: Bază de date filtrabilă (Video, Documentație, Practică) pentru acces rapid.
+    5. Proiecte Practice: Listă interactivă de idei pentru portofoliu.
+    Motivație: Utilizatorul are nevoie de un parcurs structurat, nu doar de o listă lungă de link-uri. Interactivitatea permite filtrarea zgomotului informațional.
+-->
+<!-- Visualization & Content Choices: 
+    - Popularitate Tech: Chart.js Bar Chart pentru a arăta poziția .NET în industrie.
+    - Skill Distribution: Pie Chart pentru ponderea ariilor (Web, Mobile, Cloud).
+    - Roadmaps: Listă verticală stilizată cu HTML/CSS (fără SVG/Mermaid).
+    - Filtre Resurse: Logica JS pentru filtrare instantanee după tag-uri.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<nav class="sticky top-0 z-50 bg-white/90 border-b border-gray-100 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">.NET Hub</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <button onclick="scrollToSection('home')" class="nav-link font-medium hover:text-orange-600 transition-colors">Acasă</button>
+                <button onclick="scrollToSection('trends')" class="nav-link font-medium hover:text-orange-600 transition-colors">Tendințe</button>
+                <button onclick="scrollToSection('roadmap')" class="nav-link font-medium hover:text-orange-600 transition-colors">Roadmap</button>
+                <button onclick="scrollToSection('resources')" class="nav-link font-medium hover:text-orange-600 transition-colors">Resurse</button>
+            </div>
+            <div class="md:hidden">
+                <span class="text-orange-500">☰</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+
+    <!-- Hero Section -->
+    <section id="home" class="mb-16 py-12 text-center md:text-left flex flex-col md:flex-row items-center gap-12">
+        <div class="md:w-1/2">
+            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6 text-slate-800">
+                Stăpânește universul <span class="text-orange-500">.NET & C#</span> prin studiu structurat.
+            </h1>
+            <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                Această platformă consolidează cele mai bune resurse din industrie într-o experiență interactivă. De la bazele C# la arhitecturi complexe în Cloud, explorează tot ce ai nevoie pentru a deveni un expert.
+            </p>
+            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                <button onclick="scrollToSection('roadmap')" class="bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold shadow-lg shadow-orange-200 hover:bg-orange-600 transition-all">Începe Călătoria</button>
+                <button onclick="scrollToSection('resources')" class="bg-white border border-slate-200 text-slate-700 px-8 py-3 rounded-lg font-semibold hover:bg-slate-50 transition-all">Vezi Resursele</button>
+            </div>
+        </div>
+        <div class="md:w-1/2 w-full">
+            <div class="glass-card p-8 rounded-2xl shadow-xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                    <span class="text-sm font-mono text-slate-400 ml-2">Console.WriteLine("Hello .NET!");</span>
+                </div>
+                <div class="space-y-4">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-full"></div>
+                    <div class="h-4 bg-slate-100 rounded w-5/6"></div>
+                    <div class="grid grid-cols-2 gap-4 mt-8">
+                        <div class="p-4 bg-orange-50 rounded-xl border border-orange-100">
+                            <div class="text-2xl font-bold text-orange-600">8M+</div>
+                            <div class="text-xs text-slate-500 uppercase tracking-wider">Dezvoltatori</div>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-2xl font-bold text-slate-600">Open</div>
+                            <div class="text-xs text-slate-500 uppercase tracking-wider">Source & Cross-plat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trends Section -->
+    <section id="trends" class="mb-20">
+        <div class="mb-12">
+            <h2 class="text-3xl font-bold text-slate-800 mb-4">Piața și Tehnologia</h2>
+            <p class="text-slate-600 max-w-2xl">
+                Analiza curentă a ecosistemului arată o creștere masivă în zona de Cloud Native și dezvoltare Cross-Platform cu .NET MAUI. Vizualizările de mai jos reflectă cererea de competențe în 2024.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="glass-card p-6 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-semibold mb-6 text-center">Popularitate Framework-uri (Cerere Joburi)</h3>
+                <div class="chart-container">
+                    <canvas id="popularityChart"></canvas>
+                </div>
+                <p class="text-sm text-center text-slate-400 mt-4 italic">Sursă simulată: Stack Overflow & LinkedIn Trends</p>
+            </div>
+            <div class="glass-card p-6 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-semibold mb-6 text-center">Distribuție Specializări .NET</h3>
+                <div class="chart-container">
+                    <canvas id="specializationChart"></canvas>
+                </div>
+                <p class="text-sm text-center text-slate-400 mt-4 italic">Unde lucrează majoritatea dezvoltatorilor .NET</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="mb-20 bg-slate-50 -mx-4 px-4 py-16 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Ghidul tău de Învățare</h2>
+                <p class="text-slate-600">Am împărțit procesul în trei etape critice pentru o învățare eficientă.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button onclick="showRoadmap('junior')" id="btn-junior" class="roadmap-btn px-6 py-2 rounded-full font-medium transition-all bg-orange-500 text-white">Nivel Junior</button>
+                <button onclick="showRoadmap('mid')" id="btn-mid" class="roadmap-btn px-6 py-2 rounded-full font-medium transition-all bg-white border border-slate-200 text-slate-600">Nivel Mid</button>
+                <button onclick="showRoadmap('senior')" id="btn-senior" class="roadmap-btn px-6 py-2 rounded-full font-medium transition-all bg-white border border-slate-200 text-slate-600">Nivel Senior</button>
+            </div>
+
+            <div id="roadmap-content" class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <!-- Content injectat prin JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="mb-20">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Bibliotecă de Resurse</h2>
+                <p class="text-slate-600">Curatate și verificate pentru calitate.</p>
+            </div>
+            <div class="relative">
+                <input type="text" id="resourceSearch" placeholder="Caută resurse (ex: ASP.NET, EF Core)..." 
+                       class="w-full md:w-80 px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none transition-all">
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-8" id="filterContainer">
+            <button onclick="filterResources('all')" class="filter-tag px-4 py-1.5 rounded-lg bg-slate-800 text-white text-sm">Toate</button>
+            <button onclick="filterResources('video')" class="filter-tag px-4 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm hover:bg-slate-50">Cursuri Video</button>
+            <button onclick="filterResources('docs')" class="filter-tag px-4 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm hover:bg-slate-50">Documentație</button>
+            <button onclick="filterResources('interactive')" class="filter-tag px-4 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm hover:bg-slate-50">Interactiv</button>
+            <button onclick="filterResources('blog')" class="filter-tag px-4 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm hover:bg-slate-50">Bloguri</button>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="resourceGrid">
+            <!-- Content injectat prin JS -->
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-slate-900 text-slate-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="mb-4">© 2024 Hub de Resurse .NET - Dezvoltat pentru Comunitate</p>
+        <div class="flex justify-center gap-6 text-sm">
+            <a href="#" class="hover:text-white transition-colors">GitHub</a>
+            <a href="#" class="hover:text-white transition-colors">Discord Comunitate</a>
+            <a href="#" class="hover:text-white transition-colors">Newsletter</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // --- DATA ---
+    const resources = [
+        { title: "Microsoft Learn: C# Fundamentals", type: "docs", level: "Junior", link: "https://learn.microsoft.com/en-us/dotnet/csharp/", desc: "Punctul de plecare oficial. Structurat și mereu actualizat." },
+        { title: "Nick Chapsas - YouTube", type: "video", level: "Mid", link: "https://www.youtube.com/@nickchapsas", desc: "Sfaturi avansate, performance tuning și noutăți C#." },
+        { title: "FreeCodeCamp 12h Course", type: "video", level: "Junior", link: "https://www.youtube.com/watch?v=GhQdlIFylQ8", desc: "Un curs mamut care acoperă tot ce înseamnă bazele limbajului." },
+        { title: "C# Exercises (Exercism)", type: "interactive", level: "Junior", link: "https://exercism.org/tracks/csharp", desc: "Învață prin rezolvarea de probleme practice cu feedback." },
+        { title: "ASP.NET Core Docs", type: "docs", level: "Mid", link: "https://learn.microsoft.com/en-us/aspnet/core/", desc: "Biblia dezvoltării web cu .NET." },
+        { title: "Milan Jovanović Blog", type: "blog", level: "Senior", link: "https://www.milanjovanovic.com/", desc: "Arhitectură, Clean Code și Microservicii în .NET." },
+        { title: "Entity Framework Core", type: "docs", level: "Mid", link: "https://learn.microsoft.com/en-us/ef/core/", desc: "Ghid complet pentru lucrul cu baze de date." },
+        { title: "Pluralsight: .NET Path", type: "video", level: "Mix", link: "https://www.pluralsight.com/", desc: "Resurse premium pentru profesioniști." },
+        { title: "Dapper Tutorial", type: "docs", level: "Mid", link: "https://dapper-tutorial.net/", desc: "Alternativa rapidă și simplă la EF Core." }
+    ];
+
+    const roadmaps = {
+        junior: [
+            { t: "Fundamente C#", d: "Sintaxă, Tipuri de date, Control flow, Colecții (List, Dictionary)." },
+            { t: "Programare Orientată pe Obiecte (OOP)", d: "Clase, Obiecte, Moștenire, Polimorfism, Interfețe." },
+            { t: "LINQ", d: "Interogarea colecțiilor într-un mod declarativ și eficient." },
+            { t: "Gestionarea erorilor", d: "Try-catch blocks și ierarhia excepțiilor." }
+        ],
+        mid: [
+            { t: "ASP.NET Core Web API", d: "Routing, Controllers, Middleware, Dependency Injection." },
+            { t: "Entity Framework Core", d: "Code First, Migrations, Relații între tabele." },
+            { t: "Unit Testing", d: "xUnit, Moq, FluentAssertions pentru cod robust." },
+            { t: "Design Patterns", d: "Repository, Unit of Work, Factory, Singleton." }
+        ],
+        senior: [
+            { t: "Microservicii", d: "Docker, Kubernetes, Service Bus, RabbitMQ." },
+            { t: "Performanță Avansată", d: "Span<T>, Memory<T>, Benchmarking cod." },
+            { t: "Cloud Native (Azure)", d: "App Services, Functions, Key Vault, CosmosDB." },
+            { t: "CI/CD & DevOps", d: "GitHub Actions, Azure DevOps, Monitorizare (Application Insights)." }
+        ]
+    };
+
+    // --- CHART INITIALIZATION ---
+    function initCharts() {
+        const ctx1 = document.getElementById('popularityChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['.NET', 'Node.js', 'Python', 'Java', 'Go'],
+                datasets: [{
+                    label: 'Căutări Joburi (%)',
+                    data: [85, 78, 92, 80, 65],
+                    backgroundColor: '#fb923c',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('specializationChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Web (ASP.NET)', 'Desktop (WPF/WinForms)', 'Mobile (MAUI)', 'Cloud/Microservices'],
+                datasets: [{
+                    data: [45, 15, 10, 30],
+                    backgroundColor: ['#e67e22', '#34495e', '#f1c40f', '#95a5a6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } }
+                }
+            }
+        });
+    }
+
+    // --- UI LOGIC ---
+    function scrollToSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showRoadmap(level) {
+        const content = document.getElementById('roadmap-content');
+        const data = roadmaps[level];
+        
+        // Update buttons
+        document.querySelectorAll('.roadmap-btn').forEach(btn => {
+            btn.classList.remove('bg-orange-500', 'text-white');
+            btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+        });
+        document.getElementById('btn-' + level).classList.add('bg-orange-500', 'text-white');
+        document.getElementById('btn-' + level).classList.remove('bg-white', 'text-slate-600');
+
+        let html = `<div class="space-y-8">`;
+        data.forEach((step, index) => {
+            html += `
+                <div class="roadmap-step">
+                    <h4 class="text-xl font-bold text-slate-800 mb-2">${step.t}</h4>
+                    <p class="text-slate-600">${step.d}</p>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        content.innerHTML = html;
+    }
+
+    function renderResources(filteredData) {
+        const grid = document.getElementById('resourceGrid');
+        grid.innerHTML = '';
+        
+        filteredData.forEach(res => {
+            const card = document.createElement('div');
+            card.className = 'glass-card p-6 rounded-2xl flex flex-col hover:shadow-md transition-shadow';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 px-2 py-1 rounded">${res.type}</span>
+                    <span class="text-xs text-slate-400 font-medium">${res.level}</span>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800 mb-2">${res.title}</h4>
+                <p class="text-sm text-slate-500 mb-6 flex-grow">${res.desc}</p>
+                <a href="${res.link}" target="_blank" class="text-orange-500 font-semibold text-sm flex items-center gap-2 hover:gap-3 transition-all">
+                    Accesează Resursa ➔
+                </a>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function filterResources(type) {
+        // Update tags
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.classList.remove('bg-slate-800', 'text-white');
+            tag.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+        });
+        event.target.classList.add('bg-slate-800', 'text-white');
+
+        if (type === 'all') {
+            renderResources(resources);
+        } else {
+            const filtered = resources.filter(r => r.type === type);
+            renderResources(filtered);
+        }
+    }
+
+    // Search Logic
+    document.getElementById('resourceSearch').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = resources.filter(r => 
+            r.title.toLowerCase().includes(term) || 
+            r.desc.toLowerCase().includes(term)
+        );
+        renderResources(filtered);
+    });
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        initCharts();
+        showRoadmap('junior');
+        renderResources(resources);
+    };
+</script>
+
+</body>
+</html>
